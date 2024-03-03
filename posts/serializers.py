@@ -17,11 +17,12 @@ class RatingSerializer(serializers.ModelSerializer):
 
 class PostSerializer(serializers.ModelSerializer):
     average_rating = serializers.SerializerMethodField()
+    total_user = serializers.SerializerMethodField()
     user_rating = serializers.SerializerMethodField()
 
     class Meta:
         model = Post
-        fields = ['id', 'title', 'content', 'user_rating', 'average_rating']
+        fields = ['id', 'title', 'content', 'user_rating', 'average_rating', 'total_user']
 
 
     def get_user_rating(self, obj):
@@ -39,5 +40,9 @@ class PostSerializer(serializers.ModelSerializer):
         if ratings:
             total_score = sum(rating.rate for rating in ratings)
             return total_score / len(ratings)
-        return 0  # Return 0 if no ratings yet
+        return 0
+
+    def get_total_user(self, obj):
+        ratings = obj.ratings.all()
+        return len(ratings)
 
